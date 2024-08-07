@@ -1,0 +1,173 @@
+
+작업 내용
+
+boardXml_lec01
+
+front 단에서 주요 link 설정함
+
+HomeContoller.java
+MainController.java
+BoardController.java
+UserController.java
+
+boardXml_lec02
+main.jsp(views) 에 root link 설정함
+글 제목 클릭하면 상세 페이지(board/read)로 이동하기
+                  ㄴ 이미지 나오게 함
+                     <img src="${root }images/tjoeun.png" width="100%"/>						
+main.jsp(views) 에 root link 설정함
+  ㄴ 각 게시판 왼쪽 밑 "더보기" 클릭하면
+     해당 게시판만 나오는 페이지(board/main) 로 이동하게 함
+
+main.jsp(board) 에서도 root link 설정해서
+글 제목 클릭하면 상세 페이지로 이동하게 설정함
+글쓰기 버튼 누르면 (/board/write) 로 이동하게 함
+                     ㄴ href="${root }board/write"
+
+write.jsp(board) 에서 작성하기 버튼 누르면 (/board/read) 로 이동하게 함(GET)
+                                             ㄴ read.jsp(board)
+
+read.jsp(board) 에서 목록보기, 수정하기, 삭제하기 버튼에
+href="${root }board/main", href="${root }board/modify", href="${root }board/delete"
+설정하기
+
+수정하기 <-- href="${root }board/modify"
+modify.jsp 화면에서 수정 완료 버튼 누르면 
+action="${root }board/read" 으로 이동하기
+  ㄴ 수정한 내용들을 request scope 에 올리고 
+     Controller 의 메소드에서 이 내용을 공유하여
+     Database 에 update 함 
+취소 버튼 누르면 href="${root }board/read" 으로 이동하기
+  ㄴ 수정한 내용이 없으므로 request scope 에 data 를 올리지 않음
+      
+  
+  
+top_menu.jsp 에서
+로그인 버튼 누르면 로그인 화면으로 이동하기
+
+로그인 화면에서 로그인 진행하면
+main 화면으로 이동하기
+
+로그인 화면에서 회원가입 버튼 누르면
+@GetMapping("/user/join") 가 설정된 Controller 의 메소드로 이동하고  
+join.jsp 으로 이동하기
+
+join.jsp 화면에서 회원가입(완료)버튼을 누르면
+로그인 화면으로 이동하기
+
+
+boardXml_lec03 
+  ㄴ MyBatis 설정 (database table 생성 - beans 패키지에 클래스 작성)
+  
+boardXml_lec04
+  ㄴ 상단 왼쪽 메뉴 게시판 메뉴 이름을
+     database 의 BOARD_INFO_TABLE 에서 가져와서 화면에 보이게 하기
+       ㄴ interceptor 에서 처리함 
+  
+  project Run on Server 될 때...
+  HomeController 에서
+  @GetMapping("/") 이 설정되어 있고
+  "redirect:/main" 을 return 하는 메소드에 의해서
+  
+  reviews 폴더 바로 밑에 작성한 main.jsp (VIEW) 가 선택됨
+                                ㄴ main.jsp 에 작성된 code 가 
+                                   response code(html) 가 되어서
+                                   client 의 browser 로 전송(response) 됨
+  
+                                   
+  @GetMapping("/") > @GetMapping("/main") <-- main.jsp (reviews)
+  
+  
+  Controller <-> Service <-> DAO <-> Mapper <-> Database
+     ㄴ (forward OR redirect) / VIEW(jsp)
+     
+     
+  
+  
+  
+  
+
+boardXml_lec05
+   interceptor (preHandle() 메소드) 연습
+   tjoeun 계정에 DEVELOPER 테이블 생성하기 
+
+CREATE TABLE DEVELOPER(
+  EMPNO		VARCHAR2(4) PRIMARY KEY,
+  ENAME     VARCHAR2(20) NOT NULL,
+  HEIGHT    NUMBER(5,2),
+  WEIGHT    NUMBER(5,2)
+);
+
+CREATE TABLE OFFICER(
+  OFFICERNO		VARCHAR2(4) PRIMARY KEY,
+  OFFICERNAME   VARCHAR2(20) NOT NULL,
+  DEPTNAME      VARCHAR2(20),
+  HIREDATE      VARCHAR2
+);
+
+
+
+1) DATABASE 에 TABLE 생성하기 / INSERT .... 
+    ㄴ DML 작업한 후 반드시 COMMIT; 해 주어야 함
+2) 해당 TABLE 에 MAPPING 되는 BEAN 클래스 작성하기
+3) MAPPER 작성하기
+4) MAPPER 등록하기
+5) INTERCEPTOR / CONTROLLER 에서 
+   request.setAttribute() 로 request scope 에 객체 저장하기
+   
+                 @Controller    @Service   @Repository
+    INTERCEPTOR / CONTROLLER <-> Service <-> DAO <->   Mapper <-> Database
+                    ㄴ (forward OR redirect) / VIEW(jsp)
+   
+6) VIEW 에서 화면에 출력하기   
+
+
+-- today_review 20240731 --
+
+ORACLE database 에 SOPHOMORE_SEQ 시퀀스를 생성하고
+                   SOPHOMORE 테이블을 생성하고                  
+
+DROP SEQUENCE SOPHOMORE_SEQ;
+CREATE SEQUENCE SOPHOMORE_SEQ
+START WITH 1
+INCREMENT BY 1;
+
+CREATE TABLE SOPHOMORE(
+  STDNO	    VARCHAR2(4) PRIMARY KEY,
+  NAME      VARCHAR2(20) NOT NULL,
+  GRADE     CHAR(1),
+  DEPTNAME  VARCHAR2(30)
+);
+
+INSERT INTO SOPHOMORE VALUES(SOPHOMORE_SEQ.NEXTVAL, '이순신', '2', '인공지능학과');
+INSERT INTO SOPHOMORE VALUES(SOPHOMORE_SEQ.NEXTVAL, '강감찬', '2', '컴퓨터공학과');
+INSERT INTO SOPHOMORE VALUES(SOPHOMORE_SEQ.NEXTVAL, '이율곡', '2', '통계학과');
+INSERT INTO SOPHOMORE VALUES(SOPHOMORE_SEQ.NEXTVAL, '유관순', '2', '빅데이터학과');
+INSERT INTO SOPHOMORE VALUES(SOPHOMORE_SEQ.NEXTVAL, '안중근', '2', '수학과');
+
+COMMIT;
+을 실행하고
+
+boardJava05 프로젝트의 beans 패키지에
+Sophomore 클래스를 Bean 으로 작성하고
+
+
+6, 7 교시 때 Developer 와 Officer 객체를 생성해서
+작성했던 code 를 작성하고 실행해 보세요
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

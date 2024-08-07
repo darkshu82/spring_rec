@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xmlns:beans="http://www.springframework.org/schema/beans"
+			 xmlns:context="http://www.springframework.org/schema/context"			 
+			 xsi:schemaLocation="http://www.springframework.org/schema/mvc
+			 					 http://www.springframework.org/schema/mvc/spring-mvc.xsd
+			 					 http://www.springframework.org/schema/beans
+			 					 http://www.springframework.org/schema/beans/spring-beans.xsd
+			 					 http://www.springframework.org/schema/context
+			 					 http://www.springframework.org/schema/context/spring-context.xsd">
+                        
+    <!-- 
+      scan 한 package 에 작성한 클래스 중에서
+      @Controller 라는 Annotation 이 설정된 클래스들을
+      Spring framework 가
+      Controller 로 인식해서 메모리에 loading 하게 설정하기
+                                ㄴ 해당 클래스(Controller Class)의 객체를 생성함   
+    -->                            
+    <annotation-driven />
+    
+    <!-- 
+        scan 할 bean(bean 클래스들은 spring framework 가 자동으로 객체를 생성함) 
+        들이 작성된 package 들 지정하기 
+    -->
+      <context:component-scan base-package="com.tjoeun.controller"/>
+	  <context:component-scan base-package="com.tjoeun.dao"/>
+	  <context:component-scan base-package="com.tjoeun.service"/>
+    <!-- 
+      Controller 에서 작성한 메소드의 return 값에서
+      /WEB-INF/views/index.jsp  :  /WEB-INF/views/ 이 부분과
+                                       .jsp 이 부분을 접두사, 접미사로 
+                                        설정해서 return 값에는
+                                        jsp 파일 이름만 적어도 되도록 설정하기 
+     -->
+    <beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+      <beans:property name="prefix" value="/WEB-INF/views/"/>
+      <beans:property name="suffix" value=".jsp"/>
+    </beans:bean>     
+    
+    <!-- 이미지, 음악파일, js, css 와 같은 파일을 저장하는 경로 지정하기 -->
+    <resources mapping="/**" location="/resources/" />
+    
+    
+    <!-- 
+    Java 설정방식
+    
+    	// database 접속 정보 관리
+	@Bean
+	public BasicDataSource dataSource() {
+		BasicDataSource source = new BasicDataSource();
+		source.setDriverClassName(oracleClassName);
+		source.setUrl(oracleUrl);
+		source.setUsername(oracleUserName);
+		source.setPassword(oraclePassword);
+		
+		return source;
+	}
+	
+	// query 와 접속 정보 관리
+	@Bean
+	public SqlSessionFactory factory(BasicDataSource source) throws Exception{
+		SqlSessionFactoryBean factoryBean = 
+				new SqlSessionFactoryBean();
+		factoryBean.setDataSource(source);
+		SqlSessionFactory factory = factoryBean.getObject();
+		return factory;
+	}
+	
+	// Mapper 관리 - query 실행
+	@Bean
+	public MapperFactoryBean<BoardMapper> getBoardMapper(SqlSessionFactory factory) throws Exception{
+		MapperFactoryBean<BoardMapper> factoryBean = 
+				new MapperFactoryBean<>(BoardMapper.class);
+		factoryBean.setSqlSessionFactory(factory);
+		return factoryBean;
+	}
+    
+     -->
+    
+    <!-- 
+	    properties 파일의 내용을 사용하도록 설정하기 
+	    @PropertySource("/WEB-INF/properties/database.properties")
+    -->
+    <beans:bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <beans:property name="location">
+            <beans:value>/WEB-INF/properties/database.properties</beans:value>   
+        </beans:property>    
+    </beans:bean>
+    
+    <!-- database 접속 정보 관리  -->
+    <beans:bean class="org.apache.commons.dbcp2.BasicDataSource" id="basicDataSource">
+        <beans:property name="driverClassName" value="${oracle.classname}" />
+        <beans:property name="url" value="${oracle.url}" />
+        <beans:property name="username" value="${oracle.username}" />
+        <beans:property name="password" value="${oracle.password}" />
+    </beans:bean>
+        
+    <!-- query 와 접속 정보 관리 : mapper 등록하기 -->
+    <beans:bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactoryBean">
+        <beans:property name="dataSource" ref="basicDataSource" />
+        <beans:property name="mapperLocations" value="/WEB-INF/mapper/*.xml" />
+    </beans:bean>
+    
+    <!-- Mapper 관리 - query 실행  : SqlSessionTemplate 사용 (xml) -->
+    <beans:bean class="org.mybatis.spring.SqlSessionTemplate" id="sqlSessionTemplate">
+        <beans:constructor-arg index="0" ref="sqlSessionFactoryBean" />
+    </beans:bean>
+    
+    <!-- interceptor 등록하기 -->
+    <interceptors>
+        <interceptor>
+            <mapping path="/**" />
+            <beans:bean class="com.tjoeun.interceptor.TopMenuInterceptor" />
+        </interceptor>    
+         
+    </interceptors>  
+    
+    <!--  MessageSource 등록하기 -->
+    <beans:bean class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
+                   id="messageSource">
+        <beans:property name="basenames">
+            <beans:list>
+                <beans:value>/WEB-INF/properties/errors</beans:value>
+            </beans:list>
+        </beans:property>
+    </beans:bean>
+    
+    <!--  MessageSourceAccessor 등록하기 -->
+    <beans:bean class="org.springframework.context.support.MessageSourceAccessor">
+        <beans:constructor-arg ref="messageSource"/>
+    </beans:bean>      
+    
+</beans:beans>
+
+
+
+
+
+
+
+
+
+

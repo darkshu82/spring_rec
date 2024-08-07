@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+  <insert id="insertContent" parameterType="com.tjoeun.dto.ContentDTO">
+    <![CDATA[
+      INSERT INTO CONTENT_TABLE
+	  VALUES(CONTENT_SEQ.NEXTVAL,
+	  #{content_subject}, #{content_text},
+	  #{content_file, jdbcType=VARCHAR}, #{content_writer_idx},
+	  #{content_board_idx}, SYSDATE)
+    ]]>
+  </insert>
+  <select id="getBoardName" parameterType="java.lang.Integer"
+                            resultType="java.lang.String">
+    <![CDATA[
+      SELECT BOARD_INFO_NAME
+	  FROM BOARD_INFO_TABLE
+	  WHERE BOARD_INFO_IDX=#{board_info_idx}
+    ]]>
+  </select>
+  <select id="getContentList" parameterType="java.lang.Integer"
+                              resultType="com.tjoeun.dto.ContentDTO">
+    <![CDATA[
+      SELECT C.CONTENT_IDX, C.CONTENT_SUBJECT, U.USER_NAME CONTENT_WRITER_NAME, 
+      TO_CHAR(C.CONTENT_DATE, 'YYYY-MM-DD')CONTENT_DATE
+      FROM CONTENT_TABLE C, USER_TABLE U
+      WHERE C.CONTENT_WRITER_IDX = U.USER_IDX
+      AND C.CONTENT_BOARD_IDX=#{content_board_idx}
+      ORDER BY C.CONTENT_IDX DESC
+    ]]>
+  </select>
+</mapper>                        

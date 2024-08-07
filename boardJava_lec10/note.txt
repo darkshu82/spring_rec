@@ -1,0 +1,295 @@
+
+작업 내용
+
+boardJava_lec01
+
+front 단에서 주요 link 설정함
+
+HomeContoller.java
+MainController.java
+BoardController.java
+UserController.java
+
+boardJava_lec02
+main.jsp(views) 에 root link 설정함
+글 제목 클릭하면 상세 페이지(board/read)로 이동하기
+                  ㄴ 이미지 나오게 함
+                     <img src="${root }images/tjoeun.png" width="100%"/>						
+main.jsp(views) 에 root link 설정함
+  ㄴ 각 게시판 왼쪽 밑 "더보기" 클릭하면
+     해당 게시판만 나오는 페이지(board/main) 로 이동하게 함
+
+main.jsp(board) 에서도 root link 설정해서
+글 제목 클릭하면 상세 페이지로 이동하게 설정함
+글쓰기 버튼 누르면 (/board/write) 로 이동하게 함
+                     ㄴ href="${root }board/write"
+
+write.jsp(board) 에서 작성하기 버튼 누르면 (/board/read) 로 이동하게 함(GET)
+                                             ㄴ read.jsp(board)
+
+read.jsp(board) 에서 목록보기, 수정하기, 삭제하기 버튼에
+href="${root }board/main", href="${root }board/modify", href="${root }board/delete"
+설정하기
+
+수정하기 <-- href="${root }board/modify"
+modify.jsp 화면에서 수정 완료 버튼 누르면 
+action="${root }board/read" 으로 이동하기
+  ㄴ 수정한 내용들을 request scope 에 올리고 
+     Controller 의 메소드에서 이 내용을 공유하여
+     Database 에 update 함 
+취소 버튼 누르면 href="${root }board/read" 으로 이동하기
+  ㄴ 수정한 내용이 없으므로 request scope 에 data 를 올리지 않음
+      
+  
+  
+top_menu.jsp 에서
+로그인 버튼 누르면 로그인 화면으로 이동하기
+
+로그인 화면에서 로그인 진행하면
+main 화면으로 이동하기
+
+로그인 화면에서 회원가입 버튼 누르면
+@GetMapping("/user/join") 가 설정된 Controller 의 메소드로 이동하고  
+join.jsp 으로 이동하기
+
+join.jsp 화면에서 회원가입(완료)버튼을 누르면
+로그인 화면으로 이동하기
+
+
+boardJava_lec03 
+  ㄴ MyBatis 설정 (database table 생성 - beans 패키지에 클래스 작성)
+  
+boardJava_lec04
+  ㄴ 상단 왼쪽 메뉴 게시판 메뉴 이름을
+     database 의 BOARD_INFO_TABLE 에서 가져와서 화면에 보이게 하기
+       ㄴ interceptor 에서 처리함 
+  
+  project Run on Server 될 때...
+  HomeController 에서
+  @GetMapping("/") 이 설정되어 있고
+  "redirect:/main" 을 return 하는 메소드에 의해서
+  
+  reviews 폴더 바로 밑에 작성한 main.jsp (VIEW) 가 선택됨
+                                ㄴ main.jsp 에 작성된 code 가 
+                                   response code(html) 가 되어서
+                                   client 의 browser 로 전송(response) 됨
+  
+                                   
+  @GetMapping("/") > @GetMapping("/main") <-- main.jsp (reviews)
+  
+  
+  Controller <-> Service <-> DAO <-> Mapper <-> Database
+     ㄴ (forward OR redirect) / VIEW(jsp)
+     
+     
+  
+  
+  
+  
+
+boardJava_lec05
+   interceptor (preHandle() 메소드) 연습
+   tjoeun 계정에 DEVELOPER 테이블 생성하기 
+
+CREATE TABLE DEVELOPER(
+  EMPNO		VARCHAR2(4) PRIMARY KEY,
+  ENAME     VARCHAR2(20) NOT NULL,
+  HEIGHT    NUMBER(5,2),
+  WEIGHT    NUMBER(5,2)
+);
+
+CREATE TABLE OFFICER(
+  OFFICERNO		VARCHAR2(4) PRIMARY KEY,
+  OFFICERNAME   VARCHAR2(20) NOT NULL,
+  DEPTNAME      VARCHAR2(20),
+  HIREDATE      VARCHAR2
+);
+
+
+
+1) DATABASE 에 TABLE 생성하기 / INSERT .... 
+    ㄴ DML 작업한 후 반드시 COMMIT; 해 주어야 함
+2) 해당 TABLE 에 MAPPING 되는 BEAN 클래스 작성하기
+3) MAPPER 작성하기
+4) MAPPER 등록하기
+5) INTERCEPTOR / CONTROLLER 에서 
+   request.setAttribute() 로 request scope 에 객체 저장하기
+   
+                 @Controller    @Service   @Repository
+    INTERCEPTOR / CONTROLLER <-> Service <-> DAO <->   Mapper <-> Database
+                    ㄴ (forward OR redirect) / VIEW(jsp)
+   
+6) VIEW 에서 화면에 출력하기   
+
+
+-- today_review 20240731 --
+
+ORACLE database 에 SOPHOMORE_SEQ 시퀀스를 생성하고
+                   SOPHOMORE 테이블을 생성하고                  
+
+DROP SEQUENCE SOPHOMORE_SEQ;
+CREATE SEQUENCE SOPHOMORE_SEQ
+START WITH 1
+INCREMENT BY 1;
+
+CREATE TABLE SOPHOMORE(
+  STDNO	    VARCHAR2(4) PRIMARY KEY,
+  NAME      VARCHAR2(20) NOT NULL,
+  GRADE     CHAR(1),
+  DEPTNAME  VARCHAR2(30)
+);
+
+INSERT INTO SOPHOMORE VALUES(SOPHOMORE_SEQ.NEXTVAL, '이순신', '2', '인공지능학과');
+INSERT INTO SOPHOMORE VALUES(SOPHOMORE_SEQ.NEXTVAL, '강감찬', '2', '컴퓨터공학과');
+INSERT INTO SOPHOMORE VALUES(SOPHOMORE_SEQ.NEXTVAL, '이율곡', '2', '통계학과');
+INSERT INTO SOPHOMORE VALUES(SOPHOMORE_SEQ.NEXTVAL, '유관순', '2', '빅데이터학과');
+INSERT INTO SOPHOMORE VALUES(SOPHOMORE_SEQ.NEXTVAL, '안중근', '2', '수학과');
+
+COMMIT;
+을 실행하고
+
+boardXml05 프로젝트의 beans 패키지에
+Sophomore 클래스를 Bean 으로 작성하고
+
+
+6, 7 교시 때 Developer 와 Officer 객체를 생성해서
+작성했던 code 를 작성하고 실행해 보세요
+
+
+boardJava_lec06
+
+  회원가입 구현하기 (유효성 검사)
+
+  < 비밀번호 일치 여부 검사 >
+  
+  1)  Validator 작성 <-- class UserValidator implements Validator{ }
+  2)  errors.properties 파일에 아래 내용 추가
+      NotEquals.joinUserDTO.user_pw=비밀번호가 일치하지 않습니다
+      NotEquals.joinUserDTO.user_pw2=비밀번호가 일치하지 않습니다
+  3) UserController 에
+     initBinder() 메소드 추가함
+  
+  
+boardJava_lec07
+
+  아이디 중복 확인하기
+  RestController 를 사용함
+  Ajax 통신을 사용함
+   
+  UserMapper 작성 및 등록(ServletAppContext.java 에 등록)
+  
+  
+                 @Controller    @Service   @Repository
+    INTERCEPTOR / CONTROLLER <-> Service <-> DAO <->   Mapper <-> Database
+                    ㄴ (forward OR redirect) / VIEW(jsp)
+   
+아이디중복체크
+join.jsp
+RestAPIController.java
+join.jsp
+UserDTO.java
+join.jsp
+UserController.java
+UserValidator.java
+errors.properties
+
+
+boardJava_lec08
+
+  회원가입 구현
+  
+회원가입
+UserMapper.java
+UserDAO.java
+UserService.java
+UserController.java
+join_success.jsp
+  
+  
+boardJava_lec09
+
+  로그인 기능 구현
+  아이디 / 비밀번호 입력 유효성 검사
+  로그인에 성공하면 
+  로그인한 회원 정보를 session scope 에 저장하기 
+  
+
+로그인 기능 (java)
+UserDTO.java
+RootAppContext.java
+HomeContoller.java
+login.jsp
+UserController.java
+입력유효성검사
+login.jsp : <form:errors ..>
+          : style
+UserController.java : @Valid
+UserValidator.java
+  ㄴ if(errorObjectName.equals("joinUserDTO"))
+로그인한 회원 정보를 SESSION SCOPE 에
+생성된 UserDTO 에 저장하기
+  ㄴ login 한 상태에서는 이 정보를 계속 사용할 수 있음
+UserMapper.java
+UserDAO.java
+UserService.java
+  ㄴ Session Scope 에 있는 
+     loginUserDTO 에 로그인한 회원 정보 저장
+UserController.java
+  UserService 의 getLoginUserInfo() 를 호출해서
+    loginUserDTO.isUserIsLogin() 이 true 인 것을
+    확인하고 login_success.jsp 로 이동함
+top_menu.jsp 에서 오른쪽에 있는 로그인 버튼 눌렀을 때
+login.jsp 가 화면에 나타나면서 로그인 실패 부분이
+나오지 않게 하기
+UserController.java
+ @GetMapping("/login")
+  public String login(@ModelAttribute("validationLoginUserDTO") UserDTO validationLoginUserDTO,
+                      @RequestParam(value="fail", defaultValue="false") boolean fail,
+                      Model model) {
+  	return "user/login";
+  }
+login_failure.jsp
+location.href="${root}user/login?fail=true";
+  
+  
+  로그아웃 기능 (Java)
+
+상단메뉴 설정하기
+TopMenuInterceptor.java 에서
+loginUserDTO 를 주입받아야 되는데
+Java 방식에서는 안 됨
+  ㄴ ServletAppContext.java
+     에서 주입 받아서 
+     TopMenuInterceptor의
+     생성자로 전달함 
+TopMenuInterceptor 에서
+session scope 에 있는
+loginUserDTO 를 request scope 에 올림
+top_menu.jsp 에서 
+<c:choose> 태그로 로그인했을 때와
+하지 않았을 때 보이는 링크를 구분함
+
+UserController.java 에서
+ @GetMapping("/logout")
+  public String logout() 메소드에  	
+loginUserDTO.setUserIsLogin(false);
+  ㄴ 이 code 추가함
+  
+  
+
+boardJava_lec10
+
+  로그인하지 않은 상태에서 특정 페이지에 접근하지 못하도록 하기
+  Interceptor 에서 로그인했는지 확인하고
+  로그인한 경우에만 다음 단계(Controller) 로 진행하도록 함
+
+  LoginCheckInterceptor.java
+  ServletAppContext.java
+
+
+
+
+
+
+
+

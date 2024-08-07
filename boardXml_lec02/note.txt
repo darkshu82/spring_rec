@@ -1,0 +1,62 @@
+
+작업 내용
+
+boardJava_lec01
+
+front 단에서 주요 link 설정함
+
+HomeContoller.java
+MainController.java
+BoardController.java
+UserController.java
+
+boardJava_lec02
+main.jsp(views) 에 root link 설정함
+글 제목 클릭하면 상세 페이지(board/read)로 이동하기
+                  ㄴ 이미지 나오게 함
+                     <img src="${root }images/tjoeun.png" width="100%"/>						
+main.jsp(views) 에 root link 설정함
+  ㄴ 각 게시판 왼쪽 밑 "더보기" 클릭하면
+     해당 게시판만 나오는 페이지(board/main) 로 이동하게 함
+
+main.jsp(board) 에서도 root link 설정해서
+글 제목 클릭하면 상세 페이지로 이동하게 설정함
+글쓰기 버튼 누르면 (/board/write) 로 이동하게 함
+                     ㄴ href="${root }board/write"
+
+write.jsp(board) 에서 작성하기 버튼 누르면 (/board/read) 로 이동하게 함(GET)
+                                             ㄴ read.jsp(board)
+
+read.jsp(board) 에서 목록보기, 수정하기, 삭제하기 버튼에
+href="${root }board/main", href="${root }board/modify", href="${root }board/delete"
+설정하기
+
+수정하기 <-- href="${root }board/modify"
+modify.jsp 화면에서 수정 완료 버튼 누르면 
+action="${root }board/read" 으로 이동하기
+  ㄴ 수정한 내용들을 request scope 에 올리고 
+     Controller 의 메소드에서 이 내용을 공유하여
+     Database 에 update 함 
+취소 버튼 누르면 href="${root }board/read" 으로 이동하기
+  ㄴ 수정한 내용이 없으므로 request scope 에 data 를 올리지 않음
+      
+  
+  
+top_menu.jsp 에서
+로그인 버튼 누르면 로그인 화면으로 이동하기
+
+로그인 화면에서 로그인 진행하면
+main 화면으로 이동하기
+
+로그인 화면에서 회원가입 버튼 누르면
+@GetMapping("/user/join") 가 설정된 Controller 의 메소드로 이동하고  
+join.jsp 으로 이동하기
+
+join.jsp 화면에서 회원가입(완료)버튼을 누르면
+로그인 화면으로 이동하기
+
+
+
+
+
+
